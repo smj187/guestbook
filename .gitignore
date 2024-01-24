@@ -1,0 +1,25 @@
+/vendor/
+/node_modules/
+
+# Environment files
+.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.vscode/
+.idea/
+
+# Build output
+/build/
+
+# Logs
+*.log
+
+# SQLite Database
+/api/data/todo.sqlite
+
+# Docker volume directories
+/api/data/

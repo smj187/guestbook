@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  php-app:
+    build:
+      context: ./api
+    volumes:
+      - ./api/data:/var/www/html/data
+      - ./api:/var/www/html
+    ports:
+      - "8000:8000"
