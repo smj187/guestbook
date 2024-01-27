@@ -5,5 +5,5 @@ require_once 'requestHandler.php';
 
 
 $db = new Database();
-$requestHandler = new RequestHandler($db);
+$requestHandler = new RequestHandler();
 $requestHandler->handleRequest();

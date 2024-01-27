@@ -1,14 +1,17 @@
 <?php
 
 require_once 'database.php';
-require_once 'entry.php'; 
+require_once 'entry.php';
 
-class RequestHandler {
-    
-    public function handleRequest() {
+class RequestHandler
+{
+
+    public function handleRequest()
+    {
         $method = $_SERVER['REQUEST_METHOD'];
+        $uri = $_SERVER['REQUEST_URI'];
         header('Content-Type: application/json');
-        
+
         switch ($method) {
             case 'GET':
                 echo json_encode($this->getAllEntries());
@@ -17,7 +20,7 @@ class RequestHandler {
                 echo json_encode($this->createEntry());
                 break;
             case 'DELETE':
-                echo json_encode($this->deleteEntry());
+                $this->handleDelete($uri);
                 break;
             default:
                 echo json_encode(['error' => 'Method not supported']);
@@ -25,11 +28,34 @@ class RequestHandler {
         }
     }
 
-    private function getAllEntries() {
-        return Entry::all()->toArray();
+    private function getAllEntries()
+    {
+        $pageSize = $_GET['pageSize'] ?? 10;
+        $page = $_GET['page'] ?? 1;
+
+        $pageSize = max(1, (int) $pageSize);
+        $page = max(1, (int) $page);
+
+        // calculate the pagination
+        $total = Entry::count();
+        $lastPage = ceil($total / $pageSize);
+        $offset = ($page - 1) * $pageSize;
+        $entries = Entry::orderBy('created_at', 'desc')->skip($offset)->take($pageSize)->get();
+
+        return [
+            'data' => $entries,
+            'pagination' => [
+                'current_page' => $page,
+                'last_page' => $lastPage,
+                'per_page' => $pageSize,
+                'total' => $total,
+            ]
+        ];
     }
 
-    private function createEntry() {
+
+    private function createEntry()
+    {
         $data = json_decode(file_get_contents('php://input'), true);
         if (isset($data['name']) && isset($data['message'])) {
             Entry::create(['name' => $data['name'], 'message' => $data['message']]);
@@ -39,18 +65,27 @@ class RequestHandler {
         }
     }
 
-    private function deleteEntry() {
-        $data = json_decode(file_get_contents('php://input'), true);
-        if (isset($data['id'])) {
-            $entry = Entry::find($data['id']);
-            if ($entry) {
-                $entry->delete();
-                return ['message' => 'Entry deleted successfully'];
-            } else {
-                return ['error' => 'Entry not found'];
-            }
+
+    private function handleDelete($uri)
+    {
+        $parts = explode('/', $uri);
+        $id = $parts[count($parts) - 1];
+
+        if (is_numeric($id)) {
+            echo json_encode($this->deleteEntry($id));
         } else {
-            return ['error' => 'ID field is required'];
+            echo json_encode(['error' => 'Invalid ID']);
+        }
+    }
+
+    private function deleteEntry($id)
+    {
+        $entry = Entry::find($id);
+        if ($entry) {
+            $entry->delete();
+            return ['message' => 'Entry deleted successfully'];
+        } else {
+            return ['error' => 'Entry not found'];
         }
     }
 }

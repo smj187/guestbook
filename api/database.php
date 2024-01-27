@@ -4,8 +4,10 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 
 require 'vendor/autoload.php';
 
-class Database {
-    function __construct() {
+class Database
+{
+    function __construct()
+    {
         $capsule = new Capsule;
 
         // ensure sqlite file must exist
@@ -15,9 +17,9 @@ class Database {
         }
 
         $capsule->addConnection([
-            'driver'   => 'sqlite',
+            'driver' => 'sqlite',
             'database' => '/var/www/html/data/todo.sqlite',
-            'prefix'   => '',
+            'prefix' => '',
         ]);
 
         $capsule->setAsGlobal();
@@ -26,14 +28,8 @@ class Database {
         $this->initialize();
     }
 
-    private function initialize() {
-        if (!Capsule::schema()->hasTable('todos')) {
-            Capsule::schema()->create('todos', function ($table) {
-                $table->increments('id');
-                $table->string('task');
-            });
-        }
-
+    private function initialize()
+    {
         if (!Capsule::schema()->hasTable('entries')) {
             Capsule::schema()->create('entries', function ($table) {
                 $table->increments('id');
