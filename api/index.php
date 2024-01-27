@@ -1,5 +1,7 @@
 <?php
 
+
+
 require_once 'database.php';
 require_once 'requestHandler.php';
 
