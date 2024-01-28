@@ -1,74 +1,52 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-
-type GuestbookEntry = {
-  id: number;
-  name: string;
-  message: string;
-  created_at: string;
-  updated_at: string;
-};
-
-type Pagination = {
-  current_page: number;
-  last_page: number;
-  per_page: number;
-  total: number;
-};
-
-type ApiResponse = {
-  data: GuestbookEntry[];
-  pagination: Pagination;
-};
-
+import { ApiResponse, GuestbookEntry } from "../types";
+import entryService from "../services/entryService";
+import { formatDate } from '../utils/format';
 
 const data = ref<GuestbookEntry[]>([]);
 const currentPage = ref(1);
 const pageSize = 4;
 const totalPages = ref(0);
 
-const fetchData = async () => {
+onMounted(async () => {
+  await fetchData()
+});
+
+async function fetchData() {
   try {
-    const response = await fetch(`http://localhost:8000?pageSize=${pageSize}&page=${currentPage.value}`);
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const result: ApiResponse = await response.json();
+    const result: ApiResponse = await entryService.fetchEntries(pageSize, currentPage.value);
     data.value = result.data;
     totalPages.value = result.pagination.last_page;
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error('error:', error);
   }
-};
+}
 
-
-const changePage = (page: number) => {
+function changePage(page: number) {
   currentPage.value = page;
   fetchData();
-};
+}
 
-const goToFirstPage = () => {
+function goToFirstPage() {
   changePage(1);
-};
+}
 
-const goToPreviousPage = () => {
-  if (currentPage.value > 1) {
-    changePage(currentPage.value - 1);
-  }
-};
+function goToPreviousPage() {
+  if (currentPage.value <= 1) return
+  changePage(currentPage.value - 1);
+}
 
-const goToNextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    changePage(currentPage.value + 1);
-  }
-};
+function goToNextPage() {
+  if (currentPage.value >= totalPages.value) return
+  changePage(currentPage.value + 1);
+}
 
-const goToLastPage = () => {
+function goToLastPage() {
   changePage(totalPages.value);
-};
+}
 
 
-onMounted(fetchData);
 </script>
 
 
@@ -78,7 +56,7 @@ onMounted(fetchData);
       <div v-for="entry in data" :key="entry.id" class="border p-4">
         <div>{{ entry.name }}</div>
         <div>{{ entry.message }}</div>
-        <div>{{ entry.created_at }}</div>
+        <div>{{ formatDate(entry.created_at) }}</div>
       </div>
     </div>
     <div class="flex mt-4">
@@ -94,4 +72,5 @@ onMounted(fetchData);
       <button @click="goToLastPage" :disabled="currentPage === totalPages"
         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-1 disabled:opacity-50">>></button>
     </div>
-</div></template>
+  </div>
+</template>

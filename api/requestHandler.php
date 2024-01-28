@@ -68,15 +68,16 @@ class RequestHandler
 
 
     private function createEntry()
-    {
-        $data = json_decode(file_get_contents('php://input'), true);
-        if (isset($data['name']) && isset($data['message'])) {
-            Entry::create(['name' => $data['name'], 'message' => $data['message']]);
-            return ['message' => 'Entry added successfully'];
-        } else {
-            return ['error' => 'Name and message fields are required'];
-        }
+{
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (isset($data['name']) && isset($data['message'])) {
+        $entry = Entry::create(['name' => $data['name'], 'message' => $data['message']]);
+        return $entry; 
+    } else {
+        return ['error' => 'Name and message fields are required'];
     }
+}
+
 
 
     private function handleDelete($uri)

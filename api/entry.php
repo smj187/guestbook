@@ -7,4 +7,6 @@ class Entry extends Model
     protected $table = 'entries';
     protected $fillable = ['name', 'message'];
     public $timestamps = true;
+
+    protected $hidden = ['updated_at'];
 }
