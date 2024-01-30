@@ -1,54 +1,75 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { $getRoot, $getSelection, EditorState } from 'lexical'
+import PlaygroundEditorTheme from '../themes/theme'
+import {
+    LexicalAutoFocusPlugin,
+    LexicalComposer,
+    LexicalHistoryPlugin,
+    LexicalListPlugin,
+    LexicalOnChangePlugin,
+    LexicalRichTextPlugin
+} from 'lexical-vue'
+import { CodeNode, CodeHighlightNode } from '@lexical/code';
+import { ListNode, ListItemNode } from '@lexical/list';
+import { HeadingNode, QuoteNode } from '@lexical/rich-text';
+import ContentEditable from '../components/content-editable.vue';
+import EditorToolbar from "../components/editor-toolbar-plugin.vue"
 
-const name = ref('');
-const message = ref('');
-const router = useRouter();
+const config = {
+    editable: true,
+    theme: PlaygroundEditorTheme,
+    nodes: [
+        HeadingNode,
+        ListNode,
+        ListItemNode,
+        QuoteNode,
+        CodeNode,
+        CodeHighlightNode,
 
-const createEntry = async () => {
-    try {
-        const response = await fetch('http://localhost:8000', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: name.value,
-                message: message.value,
-            }),
-        });
+    ]
+}
 
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
+function onError(error: Error) {
+    throw error
+}
 
-        router.push('/');
-    } catch (error) {
-        console.error('Error creating entry:', error);
-    }
-};
+// When the editor changes, you can get notified via the
+// LexicalOnChangePlugin!
+function onChange(editorState: EditorState) {
+    editorState.read(() => {
+        // const root = $getRoot()
+        // const selection = $getSelection()
+
+        // console.log(root, selection)
+    })
+}
 </script>
 
 
 <template>
-    <div class="container mx-auto p-4">
-        <h1 class="text-2xl font-bold mb-4">Create Entry</h1>
-        <form @submit.prevent="createEntry">
-            <div class="mb-4">
-                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Name:</label>
-                <input v-model="name" type="text" id="name"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    required>
-            </div>
-            <div class="mb-4">
-                <label for="message" class="block text-gray-700 text-sm font-bold mb-2">Message:</label>
-                <textarea v-model="message" id="message"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    required></textarea>
-            </div>
-            <button type="submit"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Create</button>
-    </form>
-</div></template>
+    <div class="bg-slate-500 text-slate-200 h-full">
+        <div class="max-w-4xl mx-auto flex flex-col">
+            <LexicalComposer :initial-config="config" @error="onError">
+                <EditorToolbar />
+                <LexicalRichTextPlugin>
+                    <template #contentEditable>
+                        <div class="editor-container bg-slate-600 rounded p-4">
+
+                            <ContentEditable />
+                        </div>
+                    </template>
+                    <template #placeholder>
+                        <div>
+                            Enter some text...
+                        </div>
+                    </template>
+                </LexicalRichTextPlugin>
+                <LexicalOnChangePlugin @change="onChange" />
+                <LexicalHistoryPlugin />
+                <LexicalAutoFocusPlugin />
+                <LexicalListPlugin />
+            </LexicalComposer>
+        </div>
+    </div>
+</template>
   

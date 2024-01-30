@@ -3,6 +3,8 @@
     <router-link to="/">Home</router-link>
     <router-link to="/create">Create</router-link>
   </nav>
-  <router-view />
+  <div style="height: calc(100vh - 4rem)">
+    <router-view />
+  </div>
 </template>     
     
