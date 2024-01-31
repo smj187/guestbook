@@ -14,6 +14,9 @@ import { ListNode, ListItemNode } from '@lexical/list';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import ContentEditable from '../components/content-editable.vue';
 import EditorToolbar from "../components/editor-toolbar-plugin.vue"
+import { ref } from 'vue';
+import { $generateHtmlFromNodes } from '@lexical/html';
+import SaveButton from '../components/save-button.vue';
 
 const config = {
     editable: true,
@@ -33,22 +36,27 @@ function onError(error: Error) {
     throw error
 }
 
+
 // When the editor changes, you can get notified via the
 // LexicalOnChangePlugin!
 function onChange(editorState: EditorState) {
     editorState.read(() => {
-        // const root = $getRoot()
-        // const selection = $getSelection()
+        const root = $getRoot()
+        const selection = $getSelection()
+
 
         // console.log(root, selection)
     })
 }
+
+
+
 </script>
 
 
 <template>
     <div class="bg-slate-500 text-slate-200 h-full">
-        <div class="max-w-4xl mx-auto flex flex-col">
+        <div class="max-w-4xl mx-auto flex flex-col relative">
             <LexicalComposer :initial-config="config" @error="onError">
                 <EditorToolbar />
                 <LexicalRichTextPlugin>
@@ -58,18 +66,24 @@ function onChange(editorState: EditorState) {
                             <ContentEditable />
                         </div>
                     </template>
-                    <template #placeholder>
-                        <div>
+                    <!--
+                     <template #placeholder>
+                        <div class="absolute top-24 left-6">
                             Enter some text...
                         </div>
                     </template>
+                   -->
                 </LexicalRichTextPlugin>
                 <LexicalOnChangePlugin @change="onChange" />
                 <LexicalHistoryPlugin />
                 <LexicalAutoFocusPlugin />
                 <LexicalListPlugin />
+                <div class="mt-12">
+                    <SaveButton />
+                </div>
             </LexicalComposer>
         </div>
+
     </div>
 </template>
   

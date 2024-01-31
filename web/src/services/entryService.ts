@@ -1,4 +1,4 @@
-import { ApiResponse } from "../types";
+import { ApiResponse, GuestbookEntry } from "../types";
 
 export class EntryService {
     private apiUrl: string;
@@ -26,7 +26,7 @@ export class EntryService {
         }
     }
 
-    async createEntry(name: string, message: string): Promise<void> {
+    async createEntry(name: string, message: string): Promise<GuestbookEntry> {
         const response = await fetch(this.apiUrl, {
             method: 'POST',
             headers: {
@@ -40,7 +40,7 @@ export class EntryService {
             throw new Error();
         }
 
-        // TODO: handle correct response
+        return response.json()
     }
 
 }

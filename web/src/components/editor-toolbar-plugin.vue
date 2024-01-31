@@ -2,11 +2,10 @@
 import { $isListNode, INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND, ListNode } from '@lexical/list';
 import { $createHeadingNode, $createQuoteNode, $isHeadingNode } from '@lexical/rich-text';
 import { $patchStyleText, $wrapNodes } from '@lexical/selection';
-import { $getSelection, $isRangeSelection, $createParagraphNode, CAN_REDO_COMMAND, CAN_UNDO_COMMAND, COMMAND_PRIORITY_LOW, REDO_COMMAND, UNDO_COMMAND, FORMAT_TEXT_COMMAND, RangeSelection, SELECTION_CHANGE_COMMAND, FORMAT_ELEMENT_COMMAND } from 'lexical';
+import { $getSelection, $isRangeSelection, $createParagraphNode, CAN_REDO_COMMAND, CAN_UNDO_COMMAND, COMMAND_PRIORITY_LOW, REDO_COMMAND, UNDO_COMMAND, FORMAT_TEXT_COMMAND, RangeSelection, SELECTION_CHANGE_COMMAND, FORMAT_ELEMENT_COMMAND, LexicalEditor } from 'lexical';
 import { useLexicalComposer } from 'lexical-vue';
 import { $getNearestNodeOfType, mergeRegister } from '@lexical/utils'
 import { onMounted, ref } from 'vue';
-
 
 const editor = useLexicalComposer()
 const blockType = ref('paragraph')
@@ -202,6 +201,9 @@ function applyFontChange(fontFamily: string) {
 onMounted(() => {
     unregisterMergeListener?.()
 })
+
+
+
 </script>
 
 <template>

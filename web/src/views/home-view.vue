@@ -55,7 +55,7 @@ function goToLastPage() {
     <div class="grid grid-cols-2 gap-4">
       <div v-for="entry in data" :key="entry.id" class="border p-4">
         <div>{{ entry.name }}</div>
-        <div>{{ entry.message }}</div>
+        <div v-html="entry.message"></div>
         <div>{{ formatDate(entry.created_at) }}</div>
       </div>
     </div>
