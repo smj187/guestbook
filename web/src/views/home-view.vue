@@ -55,7 +55,13 @@ function goToLastPage() {
     <div class="grid grid-cols-2 gap-4">
       <div v-for="entry in data" :key="entry.id" class="border p-4">
         <div>{{ entry.name }}</div>
-        <div v-html="entry.message"></div>
+        <template v-if="entry.message.startsWith('data:image')">
+          <img :src="entry.message" class=" object-contain" />
+        </template>
+        <template v-else>
+          <div v-html="entry.message"></div>
+        </template>
+
         <div>{{ formatDate(entry.created_at) }}</div>
       </div>
     </div>

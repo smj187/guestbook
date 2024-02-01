@@ -3,9 +3,11 @@ import { useLexicalComposer } from 'lexical-vue';
 import { ref } from 'vue';
 import { $generateHtmlFromNodes } from '@lexical/html';
 import entryService from "../services/entryService";
+import { useRouter } from 'vue-router';
 
 const savedContent = ref('');
 const editor = useLexicalComposer()
+const router = useRouter();
 
 function onSaveAsync() {
     editor.update(async () => {
@@ -15,6 +17,8 @@ function onSaveAsync() {
         try {
             const result = await entryService.createEntry("this", htmlString);
             console.log(result)
+
+            router.push('/');
         } catch (error) {
             console.error('error:', error);
         }

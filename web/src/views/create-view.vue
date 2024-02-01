@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { $getRoot, $getSelection, EditorState } from 'lexical'
 import PlaygroundEditorTheme from '../themes/theme'
 import {
     LexicalAutoFocusPlugin,
     LexicalComposer,
     LexicalHistoryPlugin,
     LexicalListPlugin,
-    LexicalOnChangePlugin,
     LexicalRichTextPlugin
 } from 'lexical-vue'
 import { CodeNode, CodeHighlightNode } from '@lexical/code';
@@ -14,9 +12,9 @@ import { ListNode, ListItemNode } from '@lexical/list';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import ContentEditable from '../components/content-editable.vue';
 import EditorToolbar from "../components/editor-toolbar-plugin.vue"
-import { ref } from 'vue';
-import { $generateHtmlFromNodes } from '@lexical/html';
 import SaveButton from '../components/save-button.vue';
+import DrawCanvas from '../components/draw-canvas.vue';
+import { ref } from 'vue';
 
 const config = {
     editable: true,
@@ -37,51 +35,57 @@ function onError(error: Error) {
 }
 
 
-// When the editor changes, you can get notified via the
-// LexicalOnChangePlugin!
-function onChange(editorState: EditorState) {
-    editorState.read(() => {
-        const root = $getRoot()
-        const selection = $getSelection()
 
-
-        // console.log(root, selection)
-    })
-}
-
-
+const mode = ref<"text" | "draw">("draw")
 
 </script>
 
 
 <template>
-    <div class="bg-slate-500 text-slate-200 h-full">
-        <div class="max-w-4xl mx-auto flex flex-col relative">
-            <LexicalComposer :initial-config="config" @error="onError">
-                <EditorToolbar />
-                <LexicalRichTextPlugin>
-                    <template #contentEditable>
-                        <div class="editor-container bg-slate-600 rounded p-4">
+    <div class="bg-slate-500 text-slate-200 h-full flex flex-col relative">
+        <div class="flex space-x-2 absolute top-0 z-50 left-0">
+            <button @click="mode = 'text'" class="p-2 bg-slate-900 text-slate-100 "
+                :class="mode === 'draw' && 'opacity-30'">text
+                mode</button>
+            <button @click="mode = 'draw'" class="p-2 bg-slate-900 text-slate-100  "
+                :class="mode === 'text' && 'opacity-30'">draw
+                mode</button>
+        </div>
+        <div class=" flex flex-col relative">
 
-                            <ContentEditable />
+            <template v-if="mode === 'text'">
+                <div class="mt-20 mx-auto ">
+                    <LexicalComposer :initial-config="config" @error="onError">
+                        <EditorToolbar />
+                        <LexicalRichTextPlugin>
+                            <template #contentEditable>
+                                <div class="editor-container bg-slate-600 rounded p-4">
+
+                                    <ContentEditable />
+                                </div>
+                            </template>
+                            <!--
+                         <template #placeholder>
+                            <div class="absolute top-24 left-6">
+                                Enter some text...
+                            </div>
+                        </template>
+                       -->
+                        </LexicalRichTextPlugin>
+                        <LexicalHistoryPlugin />
+                        <LexicalAutoFocusPlugin />
+                        <LexicalListPlugin />
+                        <div class="mt-12">
+                            <SaveButton />
                         </div>
-                    </template>
-                    <!--
-                     <template #placeholder>
-                        <div class="absolute top-24 left-6">
-                            Enter some text...
-                        </div>
-                    </template>
-                   -->
-                </LexicalRichTextPlugin>
-                <LexicalOnChangePlugin @change="onChange" />
-                <LexicalHistoryPlugin />
-                <LexicalAutoFocusPlugin />
-                <LexicalListPlugin />
-                <div class="mt-12">
-                    <SaveButton />
+                    </LexicalComposer>
                 </div>
-            </LexicalComposer>
+
+            </template>
+
+            <template v-else>
+                <DrawCanvas />
+            </template>
         </div>
 
     </div>
