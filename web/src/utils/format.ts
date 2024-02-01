@@ -1,4 +1,4 @@
-export const formatDate = (dateString: string): string => {
+export const formatDate = (dateString: string, showSeconds = true): string => {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -7,5 +7,5 @@ export const formatDate = (dateString: string): string => {
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const seconds = date.getSeconds().toString().padStart(2, '0');
 
-    return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+    return showSeconds ? `${day}.${month}.${year} ${hours}:${minutes}:${seconds}` : `${day}.${month}.${year} ${hours}:${minutes}`;
 };
