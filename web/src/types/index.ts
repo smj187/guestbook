@@ -4,6 +4,7 @@ export type GuestbookEntry = {
     message: string;
     created_at: string;
     updated_at: string;
+    is_placeholder?: true
 };
 
 type Pagination = {
