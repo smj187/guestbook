@@ -7,7 +7,7 @@ import ConfirmModal from '../components/confirm-delete-modal.vue';
 
 const data = ref<GuestbookEntry[]>([]);
 const currentPage = ref(1);
-const pageSize = 10;
+const pageSize = 20;
 const totalPages = ref(0);
 
 onMounted(async () => {
@@ -80,50 +80,64 @@ async function confirmDelete() {
 
 <template>
     <ConfirmModal v-if="isConfirmModalOpen" :entry="entryToDelete" @confirm="confirmDelete" @cancel="closeConfirmModal" />
+    <div class="absolute inset-0 flex flex-col p-16 pb-16 sm:pb-6 ">
 
-    <div class="container mx-auto p-4">
-        <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
-        <table class="min-w-full table-auto">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="px-4 py-2 text-left">ID</th>
-                    <th class="px-4 py-2 text-left">Name</th>
-                    <th class="px-4 py-2 text-left">Message</th>
-                    <th class="px-4 py-2 text-left">Created At</th>
-                    <th class="px-4 py-2 text-left">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="entry in data" :key="entry.id" class="border-b">
-                    <td class="px-4 py-2">{{ entry.id }}</td>
-                    <td class="px-4 py-2">{{ entry.name }}</td>
-                    <td class="px-4 py-2">{{ entry.message }}</td>
-                    <td class="px-4 py-2">{{ formatDate(entry.created_at) }}</td>
-                    <td class="px-4 py-2">
-                        <button @click="openConfirmModal(entry)"
-                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded">
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class=" mx-auto w-full h-full  my-auto pt-12">
+            <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
+            <div class="flex flex-col h-full w-full overflow-y-auto max-h-[60vh]">
 
-        <div class="flex justify-between items-center mt-4">
-            <div>
-                <button @click="goToFirstPage" :disabled="currentPage === 1"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-1 disabled:opacity-50">&lt;&lt;</button>
-                <button @click="goToPreviousPage" :disabled="currentPage === 1"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-1 disabled:opacity-50">&lt;</button>
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-white">
+                            <th class="px-4 py-2 text-left">ID</th>
+                            <th class="px-4 py-2 text-left w-56">Name</th>
+                            <th class="px-4 py-2 text-left">Message</th>
+                            <th class="px-4 py-2 text-left">Created At</th>
+                            <th class="px-4 py-2 text-left">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="entry in data" :key="entry.id" class="border-b border-slate-400">
+                            <td class="px-4 py-2">{{ entry.id }}</td>
+                            <td class="px-4 py-2 w-56">{{ entry.name }}</td>
+                            <td class="px-4 py-2">
+
+                                <template v-if="entry.message.startsWith('data:image')">
+                                    <img :src="entry.message" class="w-full h-full max-w-40 object-scale-down" />
+                                </template>
+                                <template v-else>
+                                    <div v-html="entry.message"></div>
+                                </template>
+
+                            </td>
+                            <td class="px-4 py-2">{{ formatDate(entry.created_at) }}</td>
+                            <td class="px-4 py-2">
+                                <button @click="openConfirmModal(entry)"
+                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div>
-                Page {{ currentPage }} of {{ totalPages }}
-            </div>
-            <div>
-                <button @click="goToNextPage" :disabled="currentPage === totalPages"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-1 disabled:opacity-50">&gt;</button>
-                <button @click="goToLastPage" :disabled="currentPage === totalPages"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-1 disabled:opacity-50">&gt;&gt;</button>
+
+            <div class="flex justify-between items-center mt-4">
+                <div>
+                    <button @click="goToFirstPage" :disabled="currentPage === 1"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-1 disabled:opacity-50">&lt;&lt;</button>
+                    <button @click="goToPreviousPage" :disabled="currentPage === 1"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-1 disabled:opacity-50">&lt;</button>
+                </div>
+                <div>
+                    Page {{ currentPage }} of {{ totalPages }}
+                </div>
+                <div>
+                    <button @click="goToNextPage" :disabled="currentPage === totalPages"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-1 disabled:opacity-50">&gt;</button>
+                    <button @click="goToLastPage" :disabled="currentPage === totalPages"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-1 disabled:opacity-50">&gt;&gt;</button>
+                </div>
             </div>
         </div>
     </div>

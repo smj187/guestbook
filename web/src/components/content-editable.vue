@@ -13,14 +13,14 @@ import { LexicalContentEditable } from 'lexical-vue'
     display: block;
     position: relative;
     outline: 0;
-    padding: 8px 28px 40px;
-    min-height: 150px;
+    /* padding: 8px 28px 40px; */
+    min-height: 20rem;
 }
 
 @media (max-width: 1025px) {
     .ContentEditable__root {
-        padding-left: 8px;
-        padding-right: 8px;
+        /* padding-left: 8px; */
+        /* padding-right: 8px; */
     }
 }
 </style>
