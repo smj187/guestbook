@@ -1,8 +1,27 @@
 <template>
     <div class="relative" ref="popover">
         <button @click="togglePopover"
-            class="fill-slate-600 bg-white hover:bg-slate-50 focus:ring-2 focus:outline-none focus:ring-slate-600 font-medium rounded text-sm p-2.5 text-center inline-flex items-center">
-            {{ buttonName }}
+            class=" text-slate-800 pl-5 pr-3 bg-white inline-flex space-x-2  focus:ring-2 focus:outline-none focus:ring-slate-600 font-oswald tracking-wide rounded  p-2.5 text-center items-center">
+
+
+            <svg v-if="selectedFormat.icon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2 text-slate-700">
+                <path :d="selectedFormat.icon"></path>
+            </svg>
+            <svg v-if="staticIcon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2 text-slate-700">
+                <path :d="staticIcon"></path>
+            </svg>
+
+
+
+            {{ selectedFormat.text }}
+
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                class="w-4 h-4 ml-2 text-slate-700">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+
         </button>
         <div v-show="isOpen" class="absolute z-10 bg-white rounded-md shadow-lg mt-2 p-2 w-56">
             <ul class="flex flex-col">
@@ -20,10 +39,11 @@
 </template>
   
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, defineProps, defineEmits, Ref } from 'vue';
+import { ref, onUnmounted, defineProps, defineEmits, Ref } from 'vue';
 
-const { buttonName, formats } = defineProps<{
-    buttonName: string;
+const { selectedFormat, formats } = defineProps<{
+    staticIcon?: string;
+    selectedFormat: { value: string; text: string; icon?: string; };
     formats: {
         value: string;
         text: string;
@@ -31,8 +51,7 @@ const { buttonName, formats } = defineProps<{
     }[];
 }>();
 
-const emits = defineEmits(['applyFormat']);
-
+const emits = defineEmits(['applySelection']);
 const popover = ref<HTMLDivElement | null>(null);
 const isOpen = ref(false);
 
@@ -41,7 +60,7 @@ const togglePopover = () => {
 };
 
 const applyAndClose = (value: string) => {
-    emits('applyFormat', value);
+    emits('applySelection', value);
     isOpen.value = false;
 };
 
@@ -52,7 +71,7 @@ function useClickOutside(elementRef: Ref<HTMLDivElement | null>, callback: () =>
         }
     };
 
-    onMounted(() => window.addEventListener('click', handleClickOutside));
+    window.addEventListener('click', handleClickOutside);
     onUnmounted(() => window.removeEventListener('click', handleClickOutside));
 }
 

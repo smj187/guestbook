@@ -3,24 +3,6 @@ import { LexicalContentEditable } from 'lexical-vue'
 </script>
 
 <template>
-    <LexicalContentEditable class="ContentEditable__root" />
+    <LexicalContentEditable class="border-0 text-[15px] block relative outline-0 min-h-96 h-full" />
 </template>
 
-<style scoped>
-.ContentEditable__root {
-    border: 0;
-    font-size: 15px;
-    display: block;
-    position: relative;
-    outline: 0;
-    /* padding: 8px 28px 40px; */
-    min-height: 20rem;
-}
-
-@media (max-width: 1025px) {
-    .ContentEditable__root {
-        /* padding-left: 8px; */
-        /* padding-right: 8px; */
-    }
-}
-</style>

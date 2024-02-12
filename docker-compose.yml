@@ -8,11 +8,11 @@ services:
       - ./api:/var/www/html
     ports:
       - "8000:8000"
-  app:
-    build:
-      context: ./web 
-      dockerfile: Dockerfile
-    ports:
-      - "5000:80" 
-    volumes:
-      - ./web:/app 
+  # app:
+  #   build:
+  #     context: ./web 
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5000:80" 
+  #   volumes:
+  #     - ./web:/app 

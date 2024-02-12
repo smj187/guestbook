@@ -1,5 +1,73 @@
 <template>
-    <div class="flex w-full justify-between items-center h-[3.5rem]">
+    <div ref="eraserRef" class="absolute bg-[#FF7373] rounded-full w-[50px] h-[50px] pointer-events-none hidden"></div>
+
+    <div class="aspect-[4/3.5] bg-white overflow-hidden rounded-xl w-full max-w-3xl">
+        <div ref="canvasContainer" class="w-full h-full" :class="mode === 'eraser' ? 'cursor-none' : 'cursor-auto'"></div>
+    </div>
+
+    <div class="h-16 px-9 rounded-lg bg-white mt-12 flex items-center justify-center space-x-6">
+        <div class="flex space-x-4">
+            <div class="transition-transform duration-300 mb-6 hover:scale-110 cursor-pointer"
+                :class="mode === 'pencil' ? '-translate-y-3' : ''" @click="setPencil">
+                <img src="../assets/pencil.svg" class="h-20" alt="Vue logo" />
+            </div>
+
+            <div class="transition-transform duration-300 mb-6 hover:scale-110 cursor-pointer"
+                :class="mode === 'eraser' ? '-translate-y-3' : ''" @click="setEraser">
+                <img src="../assets/eraser.png" class="h-20" alt="Vue logo" />
+            </div>
+        </div>
+        <div class="h-full flex items-center justify-center">
+            <div class="block h-8 w-px bg-slate-300" />
+        </div>
+
+        <div class="flex space-x-3">
+            <div v-for="(color, index) in colors" :key="index" class="w-6 h-6 rounded-full cursor-pointer" :class="[
+                color === activeColor
+                    ? 'ring-2 ring-offset-2 ring-offset-slate-400 ' + activeColorClass
+                    : '',
+                '',
+            ]" :style="{ backgroundColor: color }" @click="setActiveColor(color)"></div>
+        </div>
+
+        <div class="h-full flex items-center justify-center">
+            <div class="block h-8 w-px bg-slate-300" />
+        </div>
+
+        <div class="flex">
+            <button class="text-slate-800 rounded-full p-1.5 hover:text-slate-800" title="undo" @click="handleUndo">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+                </svg>
+            </button>
+
+            <button class="text-slate-800 rounded-full p-1.5 hover:text-slate-800" title="redo" @click="handleRedo">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m15 15 6-6m0 0-6-6m6 6H9a6 6 0 0 0 0 12h3" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="h-full flex items-center justify-center">
+            <div class="block h-8 w-px bg-slate-300" />
+        </div>
+
+        <div>
+            <button @click="onSaveAsync" class="font-oswald tracking-wider text-slate-800 hover:text-slate-600 p-3">
+                save
+            </button>
+        </div>
+    </div>
+
+    <!-- <div class="flex  justify-between items-center ">
+
+
+        <div class="   bg-white border border-gray-300">
+            <div ref="canvasContainer" class="" :class="mode === 'eraser' ? 'cursor-none' : 'cursor-auto'" />
+        </div>
+
         <div class="flex space-x-1 py-2">
 
 
@@ -35,11 +103,8 @@
         </div>
 
     </div>
-    <div class="flex flex-col  space-y-4 ">
-        <div class="w-[600px] mx-auto  h-[400px]  bg-white border border-gray-300">
-            <div ref="canvasContainer" class="w-full h-full" :class="mode === 'eraser' ? 'cursor-none' : 'cursor-auto'">
-            </div>
-        </div>
+    <div class="flex flex-col justify-center items-center ">
+
         <div ref="eraserRef"
             class="absolute left-0 top-0 bg-[#FF7373] hidden rounded-full w-[50px] h-[50px] pointer-events-none ">
         </div>
@@ -54,94 +119,126 @@
                 </svg>
                 Save Entry</button>
 
-
         </div>
-    </div>
+    </div> -->
 </template>
-  
-<script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { DrawingTablet } from "../utils/DrawingTablet"
-import entryService from "../services/entryService";
-import { useRouter } from 'vue-router';
 
+<script setup lang="ts">
+let drawingTabletInstance: DrawingTablet | null = null;
+
+import { computed, onMounted, ref, watch } from "vue";
+import { DrawingTablet } from "../utils/DrawingTablet";
+import entryService from "../services/entryService";
+import { useRouter } from "vue-router";
+import { useMousePosition } from "../hooks/useMousePosition";
 
 const canvasContainer = ref<HTMLDialogElement | null>(null);
-const drawingTablet = ref<DrawingTablet | null>(null)
-const mode = ref<"pencil" | "eraser">("pencil")
-const eraserRef = ref<HTMLDialogElement | null>(null)
+const mode = ref<"pencil" | "eraser">("pencil");
+const eraserRef = ref<HTMLDialogElement | null>(null);
 
 const router = useRouter();
 
+const activeColor = ref("#000000");
+const colors = ref([
+    "#000000",
+    "#f24822",
+    "#ffa629",
+    "#ffcd29",
+    "#14ae5c",
+    "#0d99ff",
+    "#9747ff",
+]);
+
+const setActiveColor = (color: string) => {
+    if (!drawingTabletInstance) return;
+    activeColor.value = color;
+
+    drawingTabletInstance.brushColor = color;
+};
+
+const activeColorClass = computed(() => {
+    const colorMap: { [key: string]: string } = {
+        "#000000": "ring-custom-black",
+        "#f24822": "ring-custom-orange",
+        "#ffa629": "ring-custom-yellow",
+        "#ffcd29": "ring-custom-light-yellow",
+        "#14ae5c": "ring-custom-green",
+        "#0d99ff": "ring-custom-blue",
+        "#9747ff": "ring-custom-purple",
+    };
+    return colorMap[activeColor.value] || "ring-black";
+});
+
+const handleUndo = () => {
+    if (!drawingTabletInstance) return;
+    drawingTabletInstance.undo();
+};
+
+const handleRedo = () => {
+    if (!drawingTabletInstance) return;
+    drawingTabletInstance.redo();
+};
+const { x, y } = useMousePosition();
+
+watch(
+    [x, y, mode],
+    ([newX, newY]) => {
+        if (mode.value !== "eraser") return;
+        if (eraserRef.value) {
+            eraserRef.value.style.left = `${newX - 25}px`;
+            eraserRef.value.style.top = `${newY - 25}px`;
+        }
+    },
+    {
+        immediate: true,
+    }
+);
+
 onMounted(() => {
-    if (!canvasContainer.value) return
-    drawingTablet.value = new DrawingTablet(canvasContainer.value, {
+    if (!canvasContainer.value) return;
+    drawingTabletInstance = new DrawingTablet(canvasContainer.value, {
         fullscreen: true,
         bg: "#ffffff",
         autoSave: false,
-
     });
 
-    drawingTablet.value.clear()
+    drawingTabletInstance.clear();
 
-    canvasContainer.value.addEventListener('mousemove', updateEraserPosition);
-    canvasContainer.value.addEventListener('mouseenter', updateEraserPosition);
-    canvasContainer.value.addEventListener('mouseleave', () => {
+    canvasContainer.value.addEventListener("mouseenter", () => {
+        if (eraserRef.value && mode.value === "eraser") {
+            eraserRef.value.style.display = "block";
+        }
+    });
+
+    canvasContainer.value.addEventListener("mouseleave", () => {
         if (eraserRef.value) {
-            eraserRef.value.style.display = 'none';
+            eraserRef.value.style.display = "none";
         }
     });
 });
 
-
 const setPencil = () => {
-    if (!drawingTablet.value) return
-    drawingTablet.value.pencil();
-    mode.value = "pencil"
-
-
+    if (!drawingTabletInstance || !eraserRef.value) return;
+    drawingTabletInstance.pencil();
+    mode.value = "pencil";
 };
 
 const setEraser = () => {
-    if (!drawingTablet.value) return
+    if (!drawingTabletInstance || !eraserRef.value) return;
 
-    drawingTablet.value.eraser();
-    mode.value = "eraser"
+    drawingTabletInstance.eraser();
+    mode.value = "eraser";
 };
-
-const setClear = () => {
-    if (!drawingTablet.value) return
-    drawingTablet.value.clear()
-}
-
-const updateEraserPosition = (e: MouseEvent) => {
-    if (!eraserRef.value || mode.value !== 'eraser' || !drawingTablet.value || !canvasContainer.value) return;
-    const rect = canvasContainer.value?.getBoundingClientRect();
-    if (!rect) return;
-
-    console.log(canvasContainer.value.offsetLeft)
-    // TODO: ignore this for now
-    const x = e.clientX - rect.left - 25 + canvasContainer.value.offsetLeft;
-    const y = e.clientY - rect.top + 50;
-    eraserRef.value.style.left = `${x}px`;
-    eraserRef.value.style.top = `${y}px`;
-    eraserRef.value.style.display = "block"
-};
-
 
 async function onSaveAsync() {
+    if (!drawingTabletInstance || !canvasContainer.value) return;
 
-    if (!drawingTablet.value) return;
-
-    const image = drawingTablet.value.export(1260, 382);
+    const { width, height } = canvasContainer.value.getBoundingClientRect();
+    const image = drawingTabletInstance.export(width, height);
+    console.log(width, height);
     const result = await entryService.createEntry("this", image);
     console.log(result);
 
-    router.push('/');
+    router.push("/");
 }
-
-
-
 </script>
-
-  

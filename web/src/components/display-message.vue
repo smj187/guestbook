@@ -1,5 +1,5 @@
 <template>
-    <div ref="containerRef" class="w-full h-full   relative">
+    <div ref="containerRef" class=" aspect-square  relative">
         <template v-if="isLoaded">
             <div class="" :style="`width: ${containerWidth}px; height: ${containerHeight}px`">
                 <template v-if="entry.message.startsWith('data:image')">

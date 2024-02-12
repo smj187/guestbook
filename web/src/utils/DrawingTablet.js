@@ -156,6 +156,7 @@ export class DrawingTablet {
             }
         }
         this.container.style.overflow = this.#opts.overflow;
+
         this.#log("Container Initialized");
     }
 
@@ -184,7 +185,7 @@ export class DrawingTablet {
 
     #initializeCanvas() {
         this.#initializeCanvasSize();
-        this.#canvas.style.background = this.#opts.bg;
+        // this.#canvas.style.background = this.#opts.bg;
         this.container.appendChild(this.#canvas);
         this.#log("Canvas initialized");
     }
@@ -273,10 +274,10 @@ export class DrawingTablet {
     }
 
     set brushColor(color) {
-        if (this.brushType == type.highlighter) {
-            this.#opts.color = color + "55";
-            return;
-        }
+        // if (this.brushType == type.highlighter) {
+        //     this.#opts.color = color + "55";
+        //     return;
+        // }
         this.#opts.color = color;
     }
 

@@ -27,12 +27,10 @@ function onSaveAsync() {
 </script>
 
 <template>
-    <button
-        class="bg-[hsl(80,47%,44%)] hover:bg-[hsl(80,47%,35%)]  w-full text-white  inline-flex justify-center space-x-3 items-center text-lg font-semibold py-3 px-4 rounded shadow  focus:outline-none focus:ring-2 focus:ring-[hsl(80,47%,44%)] focus:ring-opacity-50"
-        @click="onSaveAsync">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-            class="w-6 h-6 mr-2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-        </svg>
-        Save Entry</button>
+    <div>
+        <button @click="onSaveAsync"
+            class="font-oswald tracking-wider text-slate-800 hover:text-slate-600 bg-white rounded-lg py-2.5 px-5">
+            save
+        </button>
+    </div>
 </template>
