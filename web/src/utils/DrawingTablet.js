@@ -1,3 +1,5 @@
+// modified src from: https://github.com/hicodersofficial/drawing-tablet/blob/main/lib/DrawingTablet.js
+
 const type = {
     pencil: "pencil",
     eraser: "eraser",

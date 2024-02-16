@@ -11,14 +11,14 @@ class Database
         $capsule = new Capsule;
 
         // ensure sqlite file must exist
-        $sqliteFile = '/var/www/html/data/todo.sqlite';
+        $sqliteFile = '/var/www/html/database/database.sqlite';
         if (!file_exists($sqliteFile)) {
             touch($sqliteFile);
         }
 
         $capsule->addConnection([
             'driver' => 'sqlite',
-            'database' => '/var/www/html/data/todo.sqlite',
+            'database' => '/var/www/html/database/database.sqlite',
             'prefix' => '',
         ]);
 

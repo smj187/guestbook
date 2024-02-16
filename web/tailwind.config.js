@@ -23,6 +23,7 @@ export default {
       fontFamily: {
         'great-vibes': ['Great Vibes', 'sans-serif'],
         'oswald': ['Oswald', 'sans-serif'],
+        'roboto': ['Roboto', 'sans-serif'],
       },
     },
   },

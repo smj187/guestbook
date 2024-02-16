@@ -7,26 +7,23 @@ export class EntryService {
         this.apiUrl = apiUrl;
     }
 
-    async fetchEntries(pageSize: number, page: number): Promise<ApiResponse> {
+    async listEntriesAsync(pageSize: number, page: number): Promise<ApiResponse> {
+        console.log("a")
         const response = await fetch(`${this.apiUrl}?pageSize=${pageSize}&page=${page}`);
-        if (!response.ok) {
-            // TODO: handle error handling (show toast)
-            throw new Error();
-        }
+        console.log("b")
         return response.json();
+
+
     }
 
-    async deleteEntry(id: number): Promise<void> {
-        const response = await fetch(`${this.apiUrl}/${id}`, {
+    async deleteEntryAsync(id: number): Promise<void> {
+        await fetch(`${this.apiUrl}/${id}`, {
             method: 'DELETE'
         });
-        if (!response.ok) {
-            // TODO: handle error handling (show toast)
-            throw new Error();
-        }
+
     }
 
-    async createEntry(name: string, message: string): Promise<GuestbookEntry> {
+    async createEntryAsync(name: string, message: string): Promise<GuestbookEntry> {
         const response = await fetch(this.apiUrl, {
             method: 'POST',
             headers: {
@@ -35,15 +32,12 @@ export class EntryService {
             body: JSON.stringify({ name, message }),
         });
 
-        if (!response.ok) {
-            // TODO: handle error handling (show toast)
-            throw new Error();
-        }
+
 
         return response.json()
     }
 
 }
 
-const entryService = new EntryService('http://localhost:8000');
+const entryService = new EntryService(import.meta.env.VITE_API_URL);
 export default entryService;

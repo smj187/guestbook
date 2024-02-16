@@ -1,5 +1,6 @@
+/* app layout fonts */
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Oswald:wght@400;500;600&display=swap');
-
+/* editor fonts */
 @import url('https://fonts.googleapis.com/css2?family=Alkatra&family=Freehand&family=Gochi+Hand&family=Handlee&family=Homemade+Apple&family=Roboto&family=Short+Stack&family=Swanky+and+Moo+Moo&family=Yellowtail&display=swap');
 
 @tailwind base;

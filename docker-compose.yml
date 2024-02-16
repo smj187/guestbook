@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  php-app:
+  api:
     build:
       context: ./api
     volumes:
@@ -8,11 +8,11 @@ services:
       - ./api:/var/www/html
     ports:
       - "8000:8000"
-  # app:
-  #   build:
-  #     context: ./web 
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "5000:80" 
-  #   volumes:
-  #     - ./web:/app 
+  app:
+    build:
+      context: ./web 
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80" 
+    volumes:
+      - ./web:/app 

@@ -1,12 +1,11 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 
 export function useMousePosition() {
-    // State for storing mouse coordinates
     const x = ref(0);
     const y = ref(0);
 
     // Update mouse coordinates
-    const updateMousePosition = (event) => {
+    const updateMousePosition = (event: MouseEvent) => {
         x.value = event.clientX;
         y.value = event.clientY;
     };
@@ -22,4 +21,4 @@ export function useMousePosition() {
 
     // Return reactive mouse coordinates
     return { x, y };
-}
+} 
